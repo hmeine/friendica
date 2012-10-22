@@ -20,7 +20,7 @@ function admin_post(&$a){
 
 	if(x($_SESSION,'submanage') && intval($_SESSION['submanage']))
 		return;
-	
+
 
 
 	// urls
@@ -33,7 +33,7 @@ function admin_post(&$a){
 				admin_page_users_post($a);
 				break;
 			case 'plugins':
-				if ($a->argc > 2 && 
+				if ($a->argc > 2 &&
 					is_file("addon/".$a->argv[2]."/".$a->argv[2].".php")){
 						@include_once("addon/".$a->argv[2]."/".$a->argv[2].".php");
 						if(function_exists($a->argv[2].'_plugin_admin_post')) {
@@ -54,7 +54,7 @@ function admin_post(&$a){
 				}
 				info(t('Theme settings updated.'));
 				if(is_ajax()) return;
-				
+
 				goaway($a->get_baseurl(true) . '/admin/themes/' . $theme );
 				return;
 				break;
@@ -71,7 +71,7 @@ function admin_post(&$a){
 	}
 
 	goaway($a->get_baseurl(true) . '/admin' );
-	return; // NOTREACHED	
+	return; // NOTREACHED
 }
 
 /**
@@ -100,9 +100,9 @@ function admin_content(&$a) {
 		'dbsync' => Array($a->get_baseurl(true)."/admin/dbsync/", t('DB updates'), "dbsync"),
 		//'update' =>	Array($a->get_baseurl(true)."/admin/update/", t("Software Update") , "update")
 	);
-	
+
 	/* get plugins admin page */
-	
+
 	$r = q("SELECT * FROM `addon` WHERE `plugin_admin`=1");
 	$aside['plugins_admin']=Array();
 	foreach ($r as $h){
@@ -111,12 +111,12 @@ function admin_content(&$a) {
 		// temp plugins with admin
 		$a->plugins_admin[] = $plugin;
 	}
-		
+
 	$aside['logs'] = Array($a->get_baseurl(true)."/admin/logs/", t("Logs"), "logs");
 
 	$t = get_markup_template("admin_aside.tpl");
 	$a->page['aside'] .= replace_macros( $t, array(
-			'$admin' => $aside, 
+			'$admin' => $aside,
 			'$admtxt' => t('Admin'),
 			'$plugadmtxt' => t('Plugin Features'),
 			'$logtxt' => t('Logs'),
@@ -130,7 +130,7 @@ function admin_content(&$a) {
 	 * Page content
 	 */
 	$o = '';
-	
+
 	// urls
 	if ($a->argc > 1){
 		switch ($a->argv[1]){
@@ -161,15 +161,15 @@ function admin_content(&$a) {
 	} else {
 		$o = admin_page_summary($a);
 	}
-	
+
 	if(is_ajax()) {
-		echo $o; 
+		echo $o;
 		killme();
 		return '';
 	} else {
 		return $o;
 	}
-} 
+}
 
 
 /**
@@ -195,7 +195,7 @@ function admin_page_summary(&$a) {
 
 	$r = q("SELECT COUNT(id) as `count` FROM `register`");
 	$pending = $r[0]['count'];
-		
+
 	$r = q("select count(*) as total from deliverq where 1");
 	$deliverq = (($r) ? $r[0]['total'] : 0);
 
@@ -241,13 +241,13 @@ function admin_page_site_post(&$a){
 	$maximagesize		=	((x($_POST,'maximagesize'))		? intval(trim($_POST['maximagesize']))		:  0);
 	$maximagelength		=	((x($_POST,'maximagelength'))		? intval(trim($_POST['maximagelength']))	:  MAX_IMAGE_LENGTH);
 	$jpegimagequality	=	((x($_POST,'jpegimagequality'))		? intval(trim($_POST['jpegimagequality']))	:  JPEG_QUALITY);
-	
-	
+
+
 	$register_policy	=	((x($_POST,'register_policy'))		? intval(trim($_POST['register_policy']))	:  0);
 	$abandon_days	    	=	((x($_POST,'abandon_days'))		? intval(trim($_POST['abandon_days']))		:  0);
 
-	$register_text		=	((x($_POST,'register_text'))		? notags(trim($_POST['register_text']))		: '');	
-	
+	$register_text		=	((x($_POST,'register_text'))		? notags(trim($_POST['register_text']))		: '');
+
 	$allowed_sites		=	((x($_POST,'allowed_sites'))		? notags(trim($_POST['allowed_sites']))		: '');
 	$allowed_email		=	((x($_POST,'allowed_email'))		? notags(trim($_POST['allowed_email']))		: '');
 	$block_public		=	((x($_POST,'block_public'))		? True						: False);
@@ -275,7 +275,7 @@ function admin_page_site_post(&$a){
 
 	if($ssl_policy != intval(get_config('system','ssl_policy'))) {
 		if($ssl_policy == SSL_POLICY_FULL) {
-			q("update `contact` set 
+			q("update `contact` set
 				`url`     = replace(`url`    , 'http:' , 'https:'),
 				`photo`   = replace(`photo`  , 'http:' , 'https:'),
 				`thumb`   = replace(`thumb`  , 'http:' , 'https:'),
@@ -287,14 +287,14 @@ function admin_page_site_post(&$a){
 				`poco`    = replace(`poco`   , 'http:' , 'https:')
 				where `self` = 1"
 			);
-			q("update `profile` set 
+			q("update `profile` set
 				`photo`   = replace(`photo`  , 'http:' , 'https:'),
 				`thumb`   = replace(`thumb`  , 'http:' , 'https:')
 				where 1 "
 			);
 		}
 		elseif($ssl_policy == SSL_POLICY_SELFSIGN) {
-			q("update `contact` set 
+			q("update `contact` set
 				`url`     = replace(`url`    , 'https:' , 'http:'),
 				`photo`   = replace(`photo`  , 'https:' , 'http:'),
 				`thumb`   = replace(`thumb`  , 'https:' , 'http:'),
@@ -306,7 +306,7 @@ function admin_page_site_post(&$a){
 				`poco`    = replace(`poco`   , 'https:' , 'http:')
 				where `self` = 1"
 			);
-			q("update `profile` set 
+			q("update `profile` set
 				`photo`   = replace(`photo`  , 'https:' , 'http:'),
 				`thumb`   = replace(`thumb`  , 'https:' , 'http:')
 				where 1 "
@@ -337,7 +337,7 @@ function admin_page_site_post(&$a){
 	set_config('system','maximagesize', $maximagesize);
 	set_config('system','max_image_length', $maximagelength);
 	set_config('system','jpeg_quality', $jpegimagequality);
-	
+
 	set_config('config','register_policy', $register_policy);
 	set_config('system','account_abandon_days', $abandon_days);
 	set_config('config','register_text', $register_text);
@@ -372,8 +372,8 @@ function admin_page_site_post(&$a){
 
 	info( t('Site settings updated.') . EOL);
 	goaway($a->get_baseurl(true) . '/admin/site' );
-	return; // NOTREACHED	
-	
+	return; // NOTREACHED
+
 }
 
 /**
@@ -381,11 +381,11 @@ function admin_page_site_post(&$a){
  * @return string
  */
 function admin_page_site(&$a) {
-	
+
 	/* Installed langs */
 	$lang_choices = array();
 	$langs = glob('view/*/strings.php');
-	
+
 	if(is_array($langs) && count($langs)) {
 		if(! in_array('view/en/strings.php',$langs))
 			$langs[] = 'view/en/';
@@ -395,7 +395,7 @@ function admin_page_site(&$a) {
 			$lang_choices[$t[1]] = $t[1];
 		}
 	}
-	
+
 	/* Installed themes */
 	$theme_choices = array();
 	$theme_choices_mobile = array();
@@ -413,14 +413,14 @@ function admin_page_site(&$a) {
 			}
 		}
 	}
-	
-	
+
+
 	/* Banner */
 	$banner = get_config('system','banner');
-	if($banner == false) 
+	if($banner == false)
 		$banner = '<a href="http://friendica.com"><img id="logo-img" src="images/friendica-32.png" alt="logo" /></a><span id="logo-text"><a href="http://friendica.com">Friendica</a></span>';
 	$banner = htmlspecialchars($banner);
-	
+
 	//echo "<pre>"; var_dump($lang_choices); die("</pre>");
 
 	/* Register policy */
@@ -428,7 +428,7 @@ function admin_page_site(&$a) {
 		REGISTER_CLOSED => t("Closed"),
 		REGISTER_APPROVE => t("Requires approval"),
 		REGISTER_OPEN => t("Open")
-	); 
+	);
 
 	$ssl_choices = array(
 		SSL_POLICY_NONE => t("No SSL policy, links will track page SSL state"),
@@ -445,7 +445,7 @@ function admin_page_site(&$a) {
 		'$upload' => t('File upload'),
 		'$corporate' => t('Policies'),
 		'$advanced' => t('Advanced'),
-		
+
 		'$baseurl' => $a->get_baseurl(true),
 		// name, label, value, help string, extra data...
 		'$sitename' 		=> array('sitename', t("Site name"), htmlentities($a->config['sitename'], ENT_QUOTES), ""),
@@ -468,14 +468,14 @@ function admin_page_site(&$a) {
 		'$global_directory'	=> array('directory_submit_url', t("Global directory update URL"), get_config('system','directory_submit_url'), t("URL to update the global directory. If this is not set, the global directory is completely unavailable to the application.")),
 		'$thread_allow'		=> array('thread_allow', t("Allow threaded items"), get_config('system','thread_allow'), t("Allow infinite level threading for items on this site.")),
 		'$newuser_private'	=> array('newuser_private', t("Private posts by default for new users"), get_config('system','newuser_private'), t("Set default post permissions for all new members to the default privacy group rather than public.")),
-			
+
 		'$no_multi_reg'		=> array('no_multi_reg', t("Block multiple registrations"),  get_config('system','block_extended_register'), t("Disallow users to register additional accounts for use as pages.")),
 		'$no_openid'		=> array('no_openid', t("OpenID support"), !get_config('system','no_openid'), t("OpenID support for registration and logins.")),
 		'$no_regfullname'	=> array('no_regfullname', t("Fullname check"), !get_config('system','no_regfullname'), t("Force users to register with a space between firstname and lastname in Full name, as an antispam measure")),
 		'$no_utf'		=> array('no_utf', t("UTF-8 Regular expressions"), !get_config('system','no_utf'), t("Use PHP UTF8 regular expressions")),
 		'$no_community_page' 	=> array('no_community_page', t("Show Community Page"), !get_config('system','no_community_page'), t("Display a Community page showing all recent public postings on this site.")),
-		'$ostatus_disabled' 	=> array('ostatus_disabled', t("Enable OStatus support"), !get_config('system','ostatus_disabled'), t("Provide built-in OStatus \x28identi.ca, status.net, etc.\x29 compatibility. All communications in OStatus are public, so privacy warnings will be occasionally displayed.")),	
-		'$diaspora_enabled' 	=> array('diaspora_enabled', t("Enable Diaspora support"), get_config('system','diaspora_enabled'), t("Provide built-in Diaspora network compatibility.")),	
+		'$ostatus_disabled' 	=> array('ostatus_disabled', t("Enable OStatus support"), !get_config('system','ostatus_disabled'), t("Provide built-in OStatus \x28identi.ca, status.net, etc.\x29 compatibility. All communications in OStatus are public, so privacy warnings will be occasionally displayed.")),
+		'$diaspora_enabled' 	=> array('diaspora_enabled', t("Enable Diaspora support"), get_config('system','diaspora_enabled'), t("Provide built-in Diaspora network compatibility.")),
 		'$dfrn_only'        	=> array('dfrn_only', t('Only allow Friendica contacts'), get_config('system','dfrn_only'), t("All contacts must use Friendica protocols. All other built-in communication protocols disabled.")),
 		'$verifyssl' 		=> array('verifyssl', t("Verify SSL"), get_config('system','verifyssl'), t("If you wish, you can turn on strict certificate checking. This will mean you cannot connect (at all) to self-signed SSL sites.")),
 		'$proxyuser'		=> array('proxyuser', t("Proxy user"), get_config('system','proxyuser'), ""),
@@ -485,7 +485,7 @@ function admin_page_site(&$a) {
 		'$poll_interval'	=> array('poll_interval', t("Poll interval"), (x(get_config('system','poll_interval'))?get_config('system','poll_interval'):2), t("Delay background polling processes by this many seconds to reduce system load. If 0, use delivery interval.")),
 		'$maxloadavg'		=> array('maxloadavg', t("Maximum Load Average"), ((intval(get_config('system','maxloadavg')) > 0)?get_config('system','maxloadavg'):50), t("Maximum system load before delivery and poll processes are deferred - default 50.")),
         '$form_security_token' => get_form_security_token("admin_site"),
-			
+
 	));
 
 }
@@ -510,7 +510,7 @@ function admin_page_dbsync(&$a) {
 		if(function_exists($func)) {
 			$retval = $func();
 			if($retval === UPDATE_FAILED) {
-				$o .= sprintf( t('Executing %s failed. Check system logs.'), $func); 
+				$o .= sprintf( t('Executing %s failed. Check system logs.'), $func);
 			}
 			elseif($retval === UPDATE_SUCCESS) {
 				$o .= sprintf( t('Update %s was successfully applied.', $func));
@@ -544,7 +544,7 @@ function admin_page_dbsync(&$a) {
 		'$mark' => t('Mark success (if update was manually applied)'),
 		'$apply' => t('Attempt to execute this update step automatically'),
 		'$failed' => $failed
-	));	
+	));
 
 	return $o;
 
@@ -576,7 +576,7 @@ function admin_page_users_post(&$a){
 		}
 		notice( sprintf( tt("%s user deleted", "%s users deleted", count($users)), count($users)) );
 	}
-	
+
 	if (x($_POST,'page_users_approve')){
 		require_once("mod/regmod.php");
 		foreach($pending as $hash){
@@ -590,7 +590,7 @@ function admin_page_users_post(&$a){
 		}
 	}
 	goaway($a->get_baseurl(true) . '/admin/users' );
-	return; // NOTREACHED	
+	return; // NOTREACHED
 }
 
 /**
@@ -605,14 +605,14 @@ function admin_page_users(&$a){
 			notice( 'User not found' . EOL);
 			goaway($a->get_baseurl(true) . '/admin/users' );
 			return ''; // NOTREACHED
-		}		
+		}
 		switch($a->argv[2]){
 			case "delete":{
                 check_form_security_token_redirectOnErr('/admin/users', 'admin_users', 't');
 				// delete user
 				require_once("include/Contact.php");
 				user_remove($uid);
-				
+
 				notice( sprintf(t("User '%s' deleted"), $user[0]['username']) . EOL);
 			}; break;
 			case "block":{
@@ -626,16 +626,16 @@ function admin_page_users(&$a){
 		}
 		goaway($a->get_baseurl(true) . '/admin/users' );
 		return ''; // NOTREACHED
-		
+
 	}
-	
+
 	/* get pending */
 	$pending = q("SELECT `register`.*, `contact`.`name`, `user`.`email`
 				 FROM `register`
 				 LEFT JOIN `contact` ON `register`.`uid` = `contact`.`uid`
 				 LEFT JOIN `user` ON `register`.`uid` = `user`.`uid`;");
-	
-	
+
+
 	/* get users */
 
 	$total = q("SELECT count(*) as total FROM `user` where 1");
@@ -643,8 +643,8 @@ function admin_page_users(&$a){
 		$a->set_pager_total($total[0]['total']);
 		$a->set_pager_itemspage(100);
 	}
-	
-	
+
+
 	$users = q("SELECT `user` . * , `contact`.`name` , `contact`.`url` , `contact`.`micro`, `lastitem`.`lastitem_date`
 				FROM
 					(SELECT MAX(`item`.`changed`) as `lastitem_date`, `item`.`uid`
@@ -662,11 +662,11 @@ function admin_page_users(&$a){
 				intval($a->pager['start']),
 				intval($a->pager['itemspage'])
 				);
-					
+
 	function _setup_users($e){
         $a = get_app();
 		$accounts = Array(
-			t('Normal Account'), 
+			t('Normal Account'),
 			t('Soapbox Account'),
 			t('Community/Celebrity Account'),
 			t('Automatic Friend Account')
@@ -679,8 +679,8 @@ function admin_page_users(&$a){
 		return $e;
 	}
 	$users = array_map("_setup_users", $users);
-	
-	
+
+
 	$t = get_markup_template("admin_users.tpl");
 	$o = replace_macros($t, array(
 		// strings //
@@ -688,7 +688,7 @@ function admin_page_users(&$a){
 		'$page' => t('Users'),
 		'$submit' => t('Submit'),
 		'$select_all' => t('select all'),
-		'$h_pending' => t('User registrations waiting for confirm'),
+		'$h_pending' => t('User registrations waiting for confirmation'),
 		'$th_pending' => array( t('Request date'), t('Name'), t('Email') ),
 		'$no_pending' =>  t('No registrations.'),
 		'$approve' => t('Approve'),
@@ -697,7 +697,7 @@ function admin_page_users(&$a){
 		'$block' => t('Block'),
 		'$unblock' => t('Unblock'),
         '$siteadmin' => t('Site admin'),
-		
+
 		'$h_users' => t('Users'),
 		'$th_users' => array( t('Name'), t('Email'), t('Register date'), t('Last login'), t('Last item'),  t('Account') ),
 
@@ -724,7 +724,7 @@ function admin_page_users(&$a){
  * @return string
  */
 function admin_page_plugins(&$a){
-	
+
 	/**
 	 * Single plugin
 	 */
@@ -734,7 +734,7 @@ function admin_page_plugins(&$a){
 			notice( t("Item not found.") );
 			return '';
 		}
-		
+
 		if (x($_GET,"a") && $_GET['a']=="t"){
             check_form_security_token_redirectOnErr('/admin/plugins', 'admin_themes', 't');
 
@@ -761,22 +761,22 @@ function admin_page_plugins(&$a){
 		} else {
 			$status="off"; $action= t("Enable");
 		}
-		
+
 		$readme=Null;
 		if (is_file("addon/$plugin/README.md")){
 			$readme = file_get_contents("addon/$plugin/README.md");
 			$readme = Markdown($readme);
 		} else if (is_file("addon/$plugin/README")){
 			$readme = "<pre>". file_get_contents("addon/$plugin/README") ."</pre>";
-		} 
-		
+		}
+
 		$admin_form="";
 		if (is_array($a->plugins_admin) && in_array($plugin, $a->plugins_admin)){
 			@require_once("addon/$plugin/$plugin.php");
 			$func = $plugin.'_plugin_admin';
 			$func($a, $admin_form);
 		}
-		
+
 		$t = get_markup_template("admin_plugins_details.tpl");
 		return replace_macros($t, array(
 			'$title' => t('Administration'),
@@ -784,14 +784,14 @@ function admin_page_plugins(&$a){
 			'$toggle' => t('Toggle'),
 			'$settings' => t('Settings'),
 			'$baseurl' => $a->get_baseurl(true),
-		
+
 			'$plugin' => $plugin,
 			'$status' => $status,
 			'$action' => $action,
 			'$info' => get_plugin_info($plugin),
 			'$str_author' => t('Author: '),
-			'$str_maintainer' => t('Maintainer: '),			
-		
+			'$str_maintainer' => t('Maintainer: '),
+
 			'$admin_form' => $admin_form,
 			'$function' => 'plugins',
 			'$screenshot' => '',
@@ -799,18 +799,18 @@ function admin_page_plugins(&$a){
 
             '$form_security_token' => get_form_security_token("admin_themes"),
 		));
-	} 
-	 
-	 
-	
+	}
+
+
+
 	/**
 	 * List plugins
 	 */
-	
+
 	$plugins = array();
 	$files = glob("addon/*/");
 	if($files) {
-		foreach($files as $file) {	
+		foreach($files as $file) {
 			if (is_dir($file)){
 				list($tmp, $id)=array_map("trim", explode("/",$file));
 				$info = get_plugin_info($id);
@@ -818,14 +818,14 @@ function admin_page_plugins(&$a){
 			}
 		}
 	}
-	
+
 	$t = get_markup_template("admin_plugins.tpl");
 	return replace_macros($t, array(
 		'$title' => t('Administration'),
 		'$page' => t('Plugins'),
 		'$submit' => t('Submit'),
 		'$baseurl' => $a->get_baseurl(true),
-		'$function' => 'plugins',	
+		'$function' => 'plugins',
 		'$plugins' => $plugins,
         '$form_security_token' => get_form_security_token("admin_themes"),
 	));
@@ -889,7 +889,7 @@ function rebuild_theme_table($themes) {
 	return $o;
 }
 
-	
+
 /**
  * Themes admin page
  *
@@ -897,7 +897,7 @@ function rebuild_theme_table($themes) {
  * @return string
  */
 function admin_page_themes(&$a){
-	
+
 	$allowed_themes_str = get_config('system','allowed_themes');
 	$allowed_themes_raw = explode(',',$allowed_themes_str);
 	$allowed_themes = array();
@@ -933,7 +933,7 @@ function admin_page_themes(&$a){
 			notice( t("Item not found.") );
 			return '';
 		}
-		
+
 		if (x($_GET,"a") && $_GET['a']=="t"){
             check_form_security_token_redirectOnErr('/admin/themes', 'admin_themes', 't');
 
@@ -959,28 +959,28 @@ function admin_page_themes(&$a){
 		} else {
 			$status="off"; $action= t("Enable");
 		}
-		
+
 		$readme=Null;
 		if (is_file("view/theme/$theme/README.md")){
 			$readme = file_get_contents("view/theme/$theme/README.md");
 			$readme = Markdown($readme);
 		} else if (is_file("view/theme/$theme/README")){
 			$readme = "<pre>". file_get_contents("view/theme/$theme/README") ."</pre>";
-		} 
-		
+		}
+
 		$admin_form="";
 		if (is_file("view/theme/$theme/config.php")){
 			require_once("view/theme/$theme/config.php");
 			if(function_exists("theme_admin")){
 				$admin_form = theme_admin($a);
 			}
-			
+
 		}
-		
+
 
 		$screenshot = array( get_theme_screenshot($theme), t('Screenshot'));
 		if(! stristr($screenshot[0],$theme))
-			$screenshot = null;		
+			$screenshot = null;
 
 		$t = get_markup_template("admin_plugins_details.tpl");
 		return replace_macros($t, array(
@@ -989,7 +989,7 @@ function admin_page_themes(&$a){
 			'$toggle' => t('Toggle'),
 			'$settings' => t('Settings'),
 			'$baseurl' => $a->get_baseurl(true),
-		
+
 			'$plugin' => $theme,
 			'$status' => $status,
 			'$action' => $action,
@@ -1003,21 +1003,21 @@ function admin_page_themes(&$a){
 
 			'$form_security_token' => get_form_security_token("admin_themes"),
 		));
-	} 
-	 
-	 
-	
+	}
+
+
+
 	/**
 	 * List themes
 	 */
-	
+
 	$xthemes = array();
 	if($themes) {
 		foreach($themes as $th) {
 			$xthemes[] = array($th['name'],(($th['allowed']) ? "on" : "off"), get_theme_info($th['name']));
 		}
 	}
-	
+
 	$t = get_markup_template("admin_plugins.tpl");
 	return replace_macros($t, array(
 		'$title' => t('Administration'),
@@ -1038,7 +1038,7 @@ function admin_page_themes(&$a){
  *
  * @param App $a
  */
- 
+
 function admin_page_logs_post(&$a) {
 	if (x($_POST,"page_logs")) {
         check_form_security_token_redirectOnErr('/admin/logs', 'admin_logs');
@@ -1051,12 +1051,12 @@ function admin_page_logs_post(&$a) {
 		set_config('system','debugging',  $debugging);
 		set_config('system','loglevel', $loglevel);
 
-		
+
 	}
 
 	info( t("Log settings updated.") );
 	goaway($a->get_baseurl(true) . '/admin/logs' );
-	return; // NOTREACHED	
+	return; // NOTREACHED
 }
 
 /**
@@ -1064,7 +1064,7 @@ function admin_page_logs_post(&$a) {
  * @return string
  */
 function admin_page_logs(&$a){
-	
+
 	$log_choices = Array(
 		LOGGER_NORMAL => 'Normal',
 		LOGGER_TRACE => 'Trace',
@@ -1072,7 +1072,7 @@ function admin_page_logs(&$a){
 		LOGGER_DATA => 'Data',
 		LOGGER_ALL => 'All'
 	);
-	
+
 	$t = get_markup_template("admin_logs.tpl");
 
 	$f = get_config('system','logfile');
@@ -1080,7 +1080,7 @@ function admin_page_logs(&$a){
 	$data = '';
 
 	if(!file_exists($f)) {
-		$data = t("Error trying to open <strong>$f</strong> log file.\r\n<br/>Check to see if file $f exist and is 
+		$data = t("Error trying to open <strong>$f</strong> log file.\r\n<br/>Check to see if file $f exist and is
 readable.");
 	}
 	else {
@@ -1104,7 +1104,7 @@ readable.");
 			}
 			fclose($fp);
 		}
-	}			
+	}
 
 	return replace_macros($t, array(
 		'$title' => t('Administration'),
@@ -1114,7 +1114,7 @@ readable.");
 		'$data' => $data,
 		'$baseurl' => $a->get_baseurl(true),
 		'$logname' =>  get_config('system','logfile'),
-		
+
 									// name, label, value, help string, extra data...
 		'$debugging' 		=> array('debugging', t("Debugging"),get_config('system','debugging'), ""),
 		'$logfile'			=> array('logfile', t("Log file"), get_config('system','logfile'), t("Must be writable by web server. Relative to your Friendica top-level directory.")),
@@ -1133,7 +1133,7 @@ function admin_page_remoteupdate_post(&$a) {
 		return;
 	}
 
-	
+
 	if (x($_POST,'remotefile') && $_POST['remotefile']!=""){
 		$remotefile = $_POST['remotefile'];
 		$ftpdata = (x($_POST['ftphost'])?$_POST:false);
@@ -1156,14 +1156,14 @@ function admin_page_remoteupdate(&$a) {
 
 	$canwrite = canWeWrite();
 	$canftp = function_exists('ftp_connect');
-	
+
 	$needupdate = true;
 	$u = checkUpdate();
 	if (!is_array($u)){
 		$needupdate = false;
 		$u = array('','','');
 	}
-	
+
 	$tpl = get_markup_template("admin_remoteupdate.tpl");
 	return replace_macros($tpl, array(
 		'$baseurl' => $a->get_baseurl(true),
@@ -1180,5 +1180,5 @@ function admin_page_remoteupdate(&$a) {
 		'$ftppwd'	=> array('ftppwd', t("FTP Password"), '',''),
 		'$remotefile'=>array('remotefile','', $u['2'],'')
 	));
-	
+
 }
